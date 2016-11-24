@@ -74,9 +74,40 @@ const Query = new GraphQLObjectType({
   })
 });
 
+// Mutation
+const Mutation = new GraphQLObjectType ({
+    name: "BlogMutations",
+    description: "Mutation of our Blog",
+    fields: () => ({
+        createPost: {
+            type: Post,
+            args: {
+                title: { type: new GraphQLNonNull(GraphQLString) },
+                content: { type: new GraphQLNonNull(GraphQLString) }
+            },
+            resolve: function(source, args) {
+                let post = Object.assign({}, args);
+                
+                // Generate the _id
+                post._id = `${Date.now()}::${Math.ceil(Math.random() * 9999999)}`;
+                
+                //Assign a default user
+                post.author = "arunoda";
+                
+                // Add the Post to the data store
+                PostsList.push(post);
+                
+                // return the new Post
+                return post;
+            }
+        }
+    })
+});
+
 // This the Schema
 const Schema = new GraphQLSchema({
-  query: Query
+    query: Query,
+    mutation: Mutation
 });
 
 export default Schema;
