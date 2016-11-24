@@ -2,7 +2,7 @@
 
 // This is the Dataset in our blog
 import PostsList from './data/posts';
-// import AuthorsList from './data/authors';
+import AuthorsList from './data/authors';
 // import {CommentList, ReplyList} from './data/comments';
 
 import {
@@ -24,6 +24,19 @@ import {
 /**
   DEFINE YOUR TYPES BELOW
 **/
+const Author = new GraphQLObjectType({
+    name: "Author",
+    description: "This represent an author",
+    fields: () => ({
+        _id: {
+            type: new GraphQLNonNull(GraphQLString)
+        },
+        name: {
+            type: GraphQLString
+        }
+    })
+});
+
 const Post = new GraphQLObjectType({
     name: 'Post',
     description: 'This represents a Post',
@@ -37,7 +50,13 @@ const Post = new GraphQLObjectType({
                 return post.title || "Doesn't exist";
             }
         },
-        content: {type: GraphQLString}
+        content: {type: GraphQLString},
+        author: {
+          type: Author,
+          resolve: function(post) {
+            return AuthorsList.find(a => a._id == post.author);
+          }
+        }
     })
 });
 
